@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/KonstantinPronin/avito-unit-job-backend/internal/transaction"
 	"github.com/KonstantinPronin/avito-unit-job-backend/internal/transaction/model"
+	errs "github.com/KonstantinPronin/avito-unit-job-backend/pkg/model"
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
 )
@@ -13,19 +14,68 @@ type Transaction struct {
 }
 
 func (t *Transaction) Add(tran *model.Transaction) (*model.Transaction, error) {
-	panic("implement me")
+	return tran, t.db.Table("job.transactions").Create(tran).Error
 }
 
 func (t *Transaction) Get(tid uint64) (*model.Transaction, error) {
-	panic("implement me")
+	tr := new(model.Transaction)
+
+	if err := t.db.Table("job.transactions").Where("id = ?", tid).First(tr).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return nil, errs.NewNotFoundError(err.Error())
+		}
+
+		return nil, err
+	}
+
+	return tr, nil
 }
 
-func (t *Transaction) GetOrderByDate(uid uint64, offset, limit uint) {
-	panic("implement me")
+func (t *Transaction) GetOrderByDate(uid uint64, offset, limit uint, desc bool) (model.History, error) {
+	order := "created asc"
+	if desc {
+		order = "created desc"
+	}
+
+	return t.GetOrderBy(uid, offset, limit, order)
 }
 
-func (t *Transaction) GetOrderBySum(uid uint64, offset, limit uint) {
-	panic("implement me")
+func (t *Transaction) GetOrderBySum(uid uint64, offset, limit uint, desc bool) (model.History, error) {
+	order := "sum asc"
+	if desc {
+		order = "sum desc"
+	}
+
+	return t.GetOrderBy(uid, offset, limit, order)
+}
+
+func (t *Transaction) GetOrderBy(uid uint64, offset, limit uint, order string) (model.History, error) {
+	var result model.History
+
+	rows, err := t.db.Table("job.transactions").
+		Where("from_user = ?", uid).Or("to_user = ?", uid).
+		Offset(offset).Limit(limit).Order(order).Rows()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if err = rows.Close(); err != nil {
+			t.logger.Error("can not close connection to db")
+		}
+	}()
+
+	tr := new(model.Transaction)
+	for rows.Next() {
+		err = rows.Scan(tr)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, *tr)
+	}
+
+	return result, nil
 }
 
 func NewTransaction(db *gorm.DB, logger *zap.Logger) transaction.Repository {

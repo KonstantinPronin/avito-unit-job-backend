@@ -4,46 +4,46 @@ type InvalidArgumentError struct {
 	error string
 }
 
-func NewInvalidArgument(error string) *InvalidArgumentError {
+func NewInvalidArgument(error string) error {
 	return &InvalidArgumentError{error: error}
 }
 
-func (ia *InvalidArgumentError) Error() string {
-	return ia.error
-}
-
-type DbInternalError struct {
-	error string
-}
-
-func NewDbInternalError(error string) *DbInternalError {
-	return &DbInternalError{error: error}
-}
-
-func (di *DbInternalError) Error() string {
-	return di.error
-}
-
-type NotFoundError struct {
-	error string
-}
-
-func NewNotFoundError(error string) *NotFoundError {
-	return &NotFoundError{error: error}
-}
-
-func (nf *NotFoundError) Error() string {
-	return nf.error
+func (e *InvalidArgumentError) Error() string {
+	return e.error
 }
 
 type ForbiddenError struct {
 	error string
 }
 
-func NewForbiddenError(error string) *ForbiddenError {
+func NewForbiddenError(error string) error {
 	return &ForbiddenError{error: error}
 }
 
-func (f *ForbiddenError) Error() string {
-	return f.error
+func (e *ForbiddenError) Error() string {
+	return e.error
+}
+
+type NotFoundError struct {
+	error string
+}
+
+func NewNotFoundError(error string) error {
+	return &NotFoundError{error: error}
+}
+
+func (e *NotFoundError) Error() string {
+	return e.error
+}
+
+type ConflictError struct {
+	error string
+}
+
+func NewConflictError(error string) error {
+	return &ConflictError{error: error}
+}
+
+func (e *ConflictError) Error() string {
+	return e.error
 }

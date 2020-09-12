@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/lib/pq"
 	"net/http"
+	"strings"
 )
 
 func ParseErrors(next echo.HandlerFunc) echo.HandlerFunc {
@@ -25,7 +26,8 @@ func ParseErrors(next echo.HandlerFunc) echo.HandlerFunc {
 			case *model.ConflictError:
 				return echo.NewHTTPError(http.StatusConflict, err.Error())
 			case *pq.Error:
-				return echo.NewHTTPError(ParsePqErrors(err.(pq.Error)), err.Error())
+				code, msg := ParsePqErrors(err.(*pq.Error))
+				return echo.NewHTTPError(code, msg)
 			default:
 				return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 			}
@@ -35,10 +37,22 @@ func ParseErrors(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-func ParsePqErrors(err pq.Error) int {
-	if err.Code.Class() == constants.IntegrityConstraintViolation {
-		return http.StatusBadRequest
+func ParsePqErrors(err *pq.Error) (int, string) {
+	if err.Code.Class() != constants.IntegrityConstraintViolation {
+		return http.StatusInternalServerError, err.Error()
 	}
 
-	return http.StatusInternalServerError
+	if strings.Contains(err.Message, "transactions_from") {
+		return http.StatusNotFound, "payer not found"
+	}
+
+	if strings.Contains(err.Message, "transactions_to") {
+		return http.StatusNotFound, "recipient not found"
+	}
+
+	if strings.Contains(err.Message, "users_balance") {
+		return http.StatusConflict, "negative balance"
+	}
+
+	return http.StatusBadRequest, err.Error()
 }

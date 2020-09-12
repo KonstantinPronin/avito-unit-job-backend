@@ -52,27 +52,11 @@ func (t *Transaction) GetOrderBySum(uid uint64, offset, limit uint, desc bool) (
 func (t *Transaction) GetOrderBy(uid uint64, offset, limit uint, order string) (model.History, error) {
 	var result model.History
 
-	rows, err := t.db.Table("job.transactions").
+	err := t.db.Table("job.transactions").
 		Where("from_user = ?", uid).Or("to_user = ?", uid).
-		Offset(offset).Limit(limit).Order(order).Rows()
+		Offset(offset).Limit(limit).Order(order).Find(&result).Error
 	if err != nil {
 		return nil, err
-	}
-
-	defer func() {
-		if err = rows.Close(); err != nil {
-			t.logger.Error("can not close connection to db")
-		}
-	}()
-
-	tr := new(model.Transaction)
-	for rows.Next() {
-		err = rows.Scan(tr)
-		if err != nil {
-			return nil, err
-		}
-
-		result = append(result, *tr)
 	}
 
 	return result, nil

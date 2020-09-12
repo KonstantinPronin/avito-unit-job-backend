@@ -45,7 +45,8 @@ func (u *User) Update(uid uint64, usr *model.User) (*model.User, error) {
 }
 
 func (u *User) Contains(username string) bool {
-	if err := u.db.Table("job.users").Where("username = ?", username).Error; gorm.IsRecordNotFoundError(err) {
+	if err := u.db.Table("job.users").
+		Where("username = ?", username).First(new(User)).Error; gorm.IsRecordNotFoundError(err) {
 		return false
 	}
 

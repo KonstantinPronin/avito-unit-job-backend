@@ -5,6 +5,7 @@ import (
 	"github.com/KonstantinPronin/avito-unit-job-backend/internal/transaction/model"
 	errs "github.com/KonstantinPronin/avito-unit-job-backend/pkg/model"
 	"go.uber.org/zap"
+	"time"
 )
 
 type Transaction struct {
@@ -17,6 +18,8 @@ func (t *Transaction) Add(tr *model.Transaction) (*model.Transaction, error) {
 	if tr.From == 0 || tr.To == 0 || tr.Sum == 0 {
 		return nil, errs.NewInvalidArgument("wrong transaction parameters")
 	}
+
+	tr.Created = time.Now()
 
 	return t.rep.Add(tr)
 }

@@ -27,7 +27,7 @@ begin
     where id = new.from_user;
 
     update job.users
-    set balance = balance - new.sum
+    set balance = balance + new.sum
     where id = new.to_user;
 
     return new;

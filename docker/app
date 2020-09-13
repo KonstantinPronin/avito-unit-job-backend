@@ -1,0 +1,6 @@
+FROM golang:1.15.2
+ENV WORK /home/app
+WORKDIR $WORK
+COPY . $WORK
+RUN go build -o build/avito-unit-job-backend ./cmd/main/main.go
+CMD ./build/avito-unit-job-backend

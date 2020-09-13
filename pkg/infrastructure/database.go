@@ -23,9 +23,6 @@ func InitDatabase(path string) (db *gorm.DB, err error) {
 	if err != nil {
 		return nil, err
 	}
-	if err = db.DB().Ping(); err != nil {
-		return nil, err
-	}
-	//db.LogMode(true)
+
 	return db, nil
 }

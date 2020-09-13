@@ -14,7 +14,7 @@ func ParseErrors(next echo.HandlerFunc) echo.HandlerFunc {
 		err := next(ctx)
 
 		if err != nil {
-			switch err.(type) {
+			switch err := err.(type) {
 			case *echo.HTTPError:
 				return err
 			case *model.InvalidArgumentError:
@@ -26,7 +26,7 @@ func ParseErrors(next echo.HandlerFunc) echo.HandlerFunc {
 			case *model.ConflictError:
 				return echo.NewHTTPError(http.StatusConflict, err.Error())
 			case *pq.Error:
-				code, msg := ParsePqErrors(err.(*pq.Error))
+				code, msg := ParsePqErrors(err)
 				return echo.NewHTTPError(code, msg)
 			default:
 				return echo.NewHTTPError(http.StatusInternalServerError, err.Error())

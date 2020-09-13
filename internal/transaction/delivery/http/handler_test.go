@@ -29,9 +29,6 @@ var (
 
 	wrongID   = "test"
 	correctID = "1"
-	pageSize  = uint(10)
-	page      = uint(0)
-	desc      = false
 )
 
 func beforeTest(t *testing.T) (

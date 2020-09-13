@@ -1,7 +1,8 @@
 # avito-unit-job-backend
 
 #### Short description:
-   A tiny service designed to handle user balance.
+   A tiny service designed to handle user balance.  
+   Default port 8080.
    
 #### How to run:
 ```shell script

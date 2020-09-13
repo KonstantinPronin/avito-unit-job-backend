@@ -277,10 +277,7 @@ components:
     ErrResponse:
       type: object
       properties:
-        code:
-          type: integer
-          example: '400'
-        body:
+        messsage:
           type: string
           example: "error"
     UserIn:

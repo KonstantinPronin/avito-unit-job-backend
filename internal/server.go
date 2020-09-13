@@ -7,6 +7,7 @@ import (
 	"github.com/KonstantinPronin/avito-unit-job-backend/internal/user/delivery/http"
 	"github.com/KonstantinPronin/avito-unit-job-backend/internal/user/repository"
 	"github.com/KonstantinPronin/avito-unit-job-backend/internal/user/usecase"
+	"github.com/KonstantinPronin/avito-unit-job-backend/pkg/constants"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 	"github.com/microcosm-cc/bluemonday"
@@ -28,7 +29,7 @@ func NewServer(e *echo.Echo, db *gorm.DB, logger *zap.Logger, port string) *Serv
 	http.NewUserHandler(userUsecase, e, logger, sanitizer)
 
 	transactionRepository := repository2.NewTransaction(db, logger)
-	transactionUsecase := usecase2.NewTransaction(10, transactionRepository, logger)
+	transactionUsecase := usecase2.NewTransaction(constants.DefaultPageSize, transactionRepository, logger)
 	http2.NewTransactionHandler(transactionUsecase, e, logger, sanitizer)
 
 	return &Server{

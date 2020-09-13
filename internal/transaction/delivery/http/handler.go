@@ -72,7 +72,7 @@ func (th *TransactionHandler) GetHistory(ctx echo.Context) error {
 	}
 
 	var history model.History
-	params := NewQueryParams().init(ctx.QueryParams())
+	params := NewQueryParams().Init(ctx.QueryParams())
 
 	switch params.Order {
 	case Sum:

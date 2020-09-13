@@ -27,7 +27,7 @@ func NewQueryParams() *QueryParams {
 	}
 }
 
-func (qp *QueryParams) init(params url.Values) *QueryParams {
+func (qp *QueryParams) Init(params url.Values) *QueryParams {
 	order := params.Get("order")
 	if strings.EqualFold(order, "sum") {
 		qp.Order = Sum

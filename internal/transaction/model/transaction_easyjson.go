@@ -36,6 +36,8 @@ func easyjson461f4b12DecodeGithubComKonstantinProninAvitoUnitJobBackendInternalT
 			continue
 		}
 		switch key {
+		case "id":
+			out.ID = uint64(in.Uint64())
 		case "from":
 			out.From = uint64(in.Uint64())
 		case "to":
@@ -63,13 +65,13 @@ func easyjson461f4b12EncodeGithubComKonstantinProninAvitoUnitJobBackendInternalT
 	first := true
 	_ = first
 	{
+		const prefix string = ",\"id\":"
+		out.RawString(prefix[1:])
+		out.Uint64(uint64(in.ID))
+	}
+	{
 		const prefix string = ",\"from\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Uint64(uint64(in.From))
 	}
 	{

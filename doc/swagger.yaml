@@ -3,3 +3,351 @@ info:
   title: Avito Unit Job
   description: API документация
   version: 1.0.0
+servers:
+  - url: /
+tags:
+  - name: users
+    description: Пользователи
+  - name: transactions
+    description: Транзакции
+
+paths:
+  /user:
+    post:
+      tags:
+        - users
+      summary: Add new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserIn'
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: '200'
+                  body:
+                    $ref: '#/components/schemas/UserOut'
+        400:
+          description: Wrong body format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        409:
+          description: User already exist or negative balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+  /user/{uid}:
+    get:
+      tags:
+        - users
+      summary: Get user info
+      parameters:
+        - name: uid
+          description: User id
+          required: true
+          in: path
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: '200'
+                  body:
+                    $ref: '#/components/schemas/UserOut'
+        400:
+          description: Wrong id format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+    put:
+      tags:
+        - users
+      summary: Update user info (only username)
+      parameters:
+        - name: uid
+          description: User id
+          required: true
+          in: path
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserIn'
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: '200'
+                  body:
+                    $ref: '#/components/schemas/UserOut'
+        400:
+          description: Wrong id format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        409:
+          description: User already exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+  /transaction:
+    post:
+      tags:
+        - transactions
+      summary: Add transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionIn'
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: '200'
+                  body:
+                    $ref: '#/components/schemas/TransactionOut'
+        400:
+          description: Wrong body format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        404:
+          description: Payer or recipient not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        409:
+          description: Negative balance as result of transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+  /transaction/{tid}:
+    get:
+      tags:
+        - transactions
+      summary: Get transaction info
+      parameters:
+        - name: tid
+          description: Transaction id
+          required: true
+          in: path
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: '200'
+                  body:
+                    $ref: '#/components/schemas/TransactionOut'
+        400:
+          description: Wrong id format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        404:
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+  /history/{uid}:
+    get:
+      tags:
+        - transactions
+      summary: Get transaction history for user
+      parameters:
+        - name: uid
+          description: User id
+          required: true
+          in: path
+          schema:
+            type: integer
+        - name: order
+          description: Selection of sorting by date or by sum (default date)
+          required: false
+          in: query
+          schema:
+            type: string
+            example: 'date'
+        - name: page
+          description: Page number (default 0)
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '0'
+        - name: desc
+          description: Desc order (dafault false)
+          required: false
+          in: query
+          schema:
+            type: string
+            example: 'true'
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: '200'
+                  body:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TransactionOut'
+        400:
+          description: Wrong id format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        404:
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+components:
+  schemas:
+    ErrResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: '400'
+        body:
+          type: string
+          example: "error"
+    UserIn:
+      type: object
+      required:
+        - username
+      properties:
+        username:
+          type: string
+          example: 'jsmith'
+        balance:
+          type: number
+          format: double
+          example: '12500.00'
+    UserOut:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: '1'
+        username:
+          type: string
+          example: 'jsmith'
+        balance:
+          type: number
+          format: double
+          example: '12500.00'
+    TransactionIn:
+      type: object
+      required:
+        - from
+        - to
+        - sum
+      properties:
+        from:
+          type: integer
+          example: '2'
+        to:
+          type: integer
+          example: '3'
+        sum:
+          type: number
+          format: double
+          example: '500.00'
+        comment:
+          type: string
+          example: "payment for parking"
+    TransactionOut:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: '1'
+        from:
+          type: integer
+          example: '2'
+        to:
+          type: integer
+          example: '3'
+        created:
+          type: string
+          format: date-time
+          example: "2020-09-13T17:54:34.40881Z"
+        sum:
+          type: number
+          format: double
+          example: '500.00'
+        comment:
+          type: string
+          example: "payment for parking"

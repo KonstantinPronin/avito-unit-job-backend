@@ -60,6 +60,12 @@ paths:
           in: path
           schema:
             type: integer
+        - name: currency
+          description: Сonvert to specified currency
+          in: query
+          schema:
+            type: string
+            example: "USD"
       responses:
         200:
           description: Ok

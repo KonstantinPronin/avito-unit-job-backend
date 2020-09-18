@@ -96,6 +96,7 @@ func TestUserHandler_GetUser(t *testing.T) {
 	usecase, ctx, handler := beforeTest(t)
 
 	ctx.EXPECT().Param(gomock.Any()).Return(correctID)
+	ctx.EXPECT().QueryParam("currency").Return("")
 	usecase.EXPECT().Get(test.ID).Return(&test, nil)
 
 	err := handler.GetUser(ctx)

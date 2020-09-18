@@ -7,6 +7,10 @@ services:
       dockerfile: ./docker/database
     volumes:
       - avito-unit-job:/var/lib/postgresql/data
+
+  redis:
+    image: "redis:6.0.8-alpine"
+
   app:
     build:
       context: .
@@ -15,6 +19,7 @@ services:
       - 8080:8080
     depends_on:
       - database
+      - redis
 
 volumes:
   avito-unit-job:

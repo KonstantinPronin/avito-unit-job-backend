@@ -10,5 +10,7 @@ const (
 
 //Internal
 const (
-	DefaultPageSize = 15
+	DefaultPageSize     = 15
+	DefaultBaseCurrency = "RUB"
+	ExchangeRateURL     = "https://api.exchangeratesapi.io/latest"
 )

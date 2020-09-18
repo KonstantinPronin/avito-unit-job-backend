@@ -9,9 +9,10 @@ import (
 )
 
 var (
-	logConfig = flag.String("l", "conf/log.json", "logger config")
-	dbConfig  = flag.String("d", "conf/db.json", "database config")
-	port      = flag.String("p", ":8080", "port")
+	logConfig   = flag.String("l", "conf/log.json", "logger config")
+	dbConfig    = flag.String("d", "conf/db.json", "database config")
+	redisConfig = flag.String("r", "conf/redis.json", "redis config")
+	port        = flag.String("p", ":8080", "port")
 )
 
 func main() {
@@ -39,6 +40,16 @@ func main() {
 		}
 	}()
 
-	server := internal.NewServer(e, db, logger, *port)
+	rd, err := infrastructure.InitRedis(*redisConfig)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer func() {
+		if err := rd.Close(); err != nil {
+			log.Fatalf(`error '%s' while closing resource`, err)
+		}
+	}()
+
+	server := internal.NewServer(e, db, rd, logger, *port)
 	log.Fatal(server.Start())
 }

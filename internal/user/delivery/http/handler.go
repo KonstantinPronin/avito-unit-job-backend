@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/KonstantinPronin/avito-unit-job-backend/internal/currency"
 	"github.com/KonstantinPronin/avito-unit-job-backend/internal/user"
 	"github.com/KonstantinPronin/avito-unit-job-backend/internal/user/model"
 	"github.com/KonstantinPronin/avito-unit-job-backend/pkg/middleware"
@@ -15,6 +16,7 @@ import (
 
 type UserHandler struct {
 	usecase   user.Usecase
+	cur       currency.Usecase
 	server    *echo.Echo
 	logger    *zap.Logger
 	sanitizer *bluemonday.Policy
@@ -22,11 +24,13 @@ type UserHandler struct {
 
 func NewUserHandler(
 	usecase user.Usecase,
+	cur currency.Usecase,
 	server *echo.Echo,
 	logger *zap.Logger,
 	sanitizer *bluemonday.Policy) {
 	handler := &UserHandler{
 		usecase:   usecase,
+		cur:       cur,
 		server:    server,
 		logger:    logger,
 		sanitizer: sanitizer,
@@ -60,6 +64,17 @@ func (uh *UserHandler) GetUser(ctx echo.Context) error {
 	usr, err := uh.usecase.Get(uid)
 	if err != nil {
 		return err
+	}
+
+	cur := ctx.QueryParam("currency")
+	if cur != "" {
+		val, err := uh.cur.Exchange(usr.Balance, cur)
+
+		if err != nil {
+			return err
+		}
+
+		usr.Balance = val
 	}
 
 	return response.NewResponse(http.StatusOK, usr).WriteToCtx(ctx)

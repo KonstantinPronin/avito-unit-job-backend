@@ -31,7 +31,7 @@ var (
 	correctID = "1"
 )
 
-func beforeTest(t *testing.T) (
+func setUp(t *testing.T) (
 	*mock.MockUsecase,
 	*mock2.MockContext,
 	*TransactionHandler) {
@@ -51,7 +51,7 @@ func beforeTest(t *testing.T) (
 }
 
 func TestTransactionHandler_AddTransaction_EmptyBody(t *testing.T) {
-	_, ctx, handler := beforeTest(t)
+	_, ctx, handler := setUp(t)
 
 	request, err := http.NewRequest("", "", strings.NewReader(""))
 	if err != nil {
@@ -66,7 +66,7 @@ func TestTransactionHandler_AddTransaction_EmptyBody(t *testing.T) {
 }
 
 func TestTransactionHandler_AddTransaction(t *testing.T) {
-	usecase, ctx, handler := beforeTest(t)
+	usecase, ctx, handler := setUp(t)
 
 	body, err := easyjson.Marshal(test)
 	if err != nil {
@@ -87,7 +87,7 @@ func TestTransactionHandler_AddTransaction(t *testing.T) {
 }
 
 func TestTransactionHandler_GetTransaction_WrongId(t *testing.T) {
-	_, ctx, handler := beforeTest(t)
+	_, ctx, handler := setUp(t)
 
 	ctx.EXPECT().Param(gomock.Any()).Return(wrongID)
 
@@ -97,7 +97,7 @@ func TestTransactionHandler_GetTransaction_WrongId(t *testing.T) {
 }
 
 func TestTransactionHandler_GetTransaction(t *testing.T) {
-	usecase, ctx, handler := beforeTest(t)
+	usecase, ctx, handler := setUp(t)
 
 	ctx.EXPECT().Param(gomock.Any()).Return(correctID)
 	usecase.EXPECT().Get(test.ID).Return(&test, nil)
@@ -108,7 +108,7 @@ func TestTransactionHandler_GetTransaction(t *testing.T) {
 }
 
 func TestTransactionHandler_GetHistory_WrongID(t *testing.T) {
-	_, ctx, handler := beforeTest(t)
+	_, ctx, handler := setUp(t)
 
 	ctx.EXPECT().Param(gomock.Any()).Return(wrongID)
 
@@ -118,7 +118,7 @@ func TestTransactionHandler_GetHistory_WrongID(t *testing.T) {
 }
 
 func TestTransactionHandler_GetHistory_DateOrder(t *testing.T) {
-	usecase, ctx, handler := beforeTest(t)
+	usecase, ctx, handler := setUp(t)
 
 	ctx.EXPECT().Param(gomock.Any()).Return(correctID)
 	ctx.EXPECT().QueryParams().Return(map[string][]string{"order": {"date"}})
@@ -130,7 +130,7 @@ func TestTransactionHandler_GetHistory_DateOrder(t *testing.T) {
 }
 
 func TestTransactionHandler_GetHistory_SumOrder(t *testing.T) {
-	usecase, ctx, handler := beforeTest(t)
+	usecase, ctx, handler := setUp(t)
 
 	ctx.EXPECT().Param(gomock.Any()).Return(correctID)
 	ctx.EXPECT().QueryParams().Return(map[string][]string{"order": {"sum"}})

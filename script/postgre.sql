@@ -17,6 +17,14 @@ create table job.transactions
     comment   text
 );
 
+create index on job.transactions (from_user, sum, id);
+
+create index on job.transactions (to_user, sum, id);
+
+create index on job.transactions (from_user, created, id);
+
+create index on job.transactions (to_user, created, id);
+
 create or replace function job.update_user_balance() returns trigger
     language plpgsql
 as

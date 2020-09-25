@@ -26,7 +26,7 @@ var (
 	limit  = uint(1)
 )
 
-func beforeTest(t *testing.T) (*gorm.DB, sqlmock.Sqlmock, transaction.Repository) {
+func setUp(t *testing.T) (*gorm.DB, sqlmock.Sqlmock, transaction.Repository) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -42,7 +42,7 @@ func beforeTest(t *testing.T) (*gorm.DB, sqlmock.Sqlmock, transaction.Repository
 }
 
 func TestTransaction_Add(t *testing.T) {
-	db, mock, rep := beforeTest(t)
+	db, mock, rep := setUp(t)
 	defer db.Close()
 
 	mock.ExpectBegin()
@@ -62,7 +62,7 @@ func TestTransaction_Add(t *testing.T) {
 }
 
 func TestTransaction_Get(t *testing.T) {
-	db, mock, rep := beforeTest(t)
+	db, mock, rep := setUp(t)
 	defer db.Close()
 
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)transactions(.*) WHERE (.*)id(.*) LIMIT 1`).
@@ -81,11 +81,11 @@ func TestTransaction_Get(t *testing.T) {
 }
 
 func TestTransaction_GetOrderByDateAsc(t *testing.T) {
-	db, mock, rep := beforeTest(t)
+	db, mock, rep := setUp(t)
 	defer db.Close()
 
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)transactions(.*) 
-				WHERE (.*)from_user(.*) OR (.*)to_user(.*) ORDER BY created asc LIMIT (.*) OFFSET (.*)`).
+				WHERE (.*)from_user(.*) OR (.*)to_user(.*) ORDER BY created asc, id asc LIMIT (.*) OFFSET (.*)`).
 		WithArgs(uid, uid).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "from_user", "to_user", "created", "sum", "comment"}).
 			AddRow(test.ID, test.From, test.To, test.Created, test.Sum, test.Comment))
@@ -101,11 +101,11 @@ func TestTransaction_GetOrderByDateAsc(t *testing.T) {
 }
 
 func TestTransaction_GetOrderByDateDesc(t *testing.T) {
-	db, mock, rep := beforeTest(t)
+	db, mock, rep := setUp(t)
 	defer db.Close()
 
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)transactions(.*) 
-				WHERE (.*)from_user(.*) OR (.*)to_user(.*) ORDER BY created desc LIMIT (.*) OFFSET (.*)`).
+				WHERE (.*)from_user(.*) OR (.*)to_user(.*) ORDER BY created desc, id desc LIMIT (.*) OFFSET (.*)`).
 		WithArgs(uid, uid).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "from_user", "to_user", "created", "sum", "comment"}).
 			AddRow(test.ID, test.From, test.To, test.Created, test.Sum, test.Comment))
@@ -121,11 +121,11 @@ func TestTransaction_GetOrderByDateDesc(t *testing.T) {
 }
 
 func TestTransaction_GetOrderBySumAsc(t *testing.T) {
-	db, mock, rep := beforeTest(t)
+	db, mock, rep := setUp(t)
 	defer db.Close()
 
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)transactions(.*) 
-				WHERE (.*)from_user(.*) OR (.*)to_user(.*) ORDER BY sum asc LIMIT (.*) OFFSET (.*)`).
+				WHERE (.*)from_user(.*) OR (.*)to_user(.*) ORDER BY sum asc, id asc LIMIT (.*) OFFSET (.*)`).
 		WithArgs(uid, uid).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "from_user", "to_user", "created", "sum", "comment"}).
 			AddRow(test.ID, test.From, test.To, test.Created, test.Sum, test.Comment))
@@ -141,11 +141,11 @@ func TestTransaction_GetOrderBySumAsc(t *testing.T) {
 }
 
 func TestTransaction_GetOrderBySumDesc(t *testing.T) {
-	db, mock, rep := beforeTest(t)
+	db, mock, rep := setUp(t)
 	defer db.Close()
 
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)transactions(.*) 
-				WHERE (.*)from_user(.*) OR (.*)to_user(.*) ORDER BY sum desc LIMIT (.*) OFFSET (.*)`).
+				WHERE (.*)from_user(.*) OR (.*)to_user(.*) ORDER BY sum desc, id desc LIMIT (.*) OFFSET (.*)`).
 		WithArgs(uid, uid).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "from_user", "to_user", "created", "sum", "comment"}).
 			AddRow(test.ID, test.From, test.To, test.Created, test.Sum, test.Comment))

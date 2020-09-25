@@ -32,18 +32,18 @@ func (t *Transaction) Get(tid uint64) (*model.Transaction, error) {
 }
 
 func (t *Transaction) GetOrderByDate(uid uint64, offset, limit uint, desc bool) (model.History, error) {
-	order := "created asc"
+	order := "created asc, id asc"
 	if desc {
-		order = "created desc"
+		order = "created desc, id desc"
 	}
 
 	return t.GetOrderBy(uid, offset, limit, order)
 }
 
 func (t *Transaction) GetOrderBySum(uid uint64, offset, limit uint, desc bool) (model.History, error) {
-	order := "sum asc"
+	order := "sum asc, id asc"
 	if desc {
-		order = "sum desc"
+		order = "sum desc, id desc"
 	}
 
 	return t.GetOrderBy(uid, offset, limit, order)

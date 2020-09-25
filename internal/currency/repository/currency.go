@@ -5,18 +5,20 @@ import (
 	"github.com/KonstantinPronin/avito-unit-job-backend/internal/currency"
 	"github.com/KonstantinPronin/avito-unit-job-backend/internal/currency/model"
 	"github.com/KonstantinPronin/avito-unit-job-backend/pkg/constants"
+	"github.com/KonstantinPronin/avito-unit-job-backend/pkg/http"
 	errs "github.com/KonstantinPronin/avito-unit-job-backend/pkg/model"
 	"github.com/go-redis/redis/v7"
 	"github.com/mailru/easyjson"
 	"go.uber.org/zap"
-	"net/http"
+	outhttp "net/http"
 	"strconv"
 	"time"
 )
 
 type Currency struct {
 	base   string
-	conn   *redis.Client
+	conn   redis.Cmdable
+	client http.Getter
 	logger *zap.Logger
 }
 
@@ -76,7 +78,7 @@ func (c *Currency) getExchangeRates() (map[string]float32, error) {
 
 	url := fmt.Sprintf("%s?base=%s", constants.ExchangeRateURL, c.base)
 
-	resp, err := http.Get(url)
+	resp, err := c.client.Get(url)
 	if resp != nil {
 		defer func() {
 			if err = resp.Body.Close(); err != nil {
@@ -98,11 +100,12 @@ func (c *Currency) getExchangeRates() (map[string]float32, error) {
 }
 
 func NewCurrency(base string,
-	conn *redis.Client,
+	conn redis.Cmdable,
 	logger *zap.Logger) currency.Repository {
 	return &Currency{
 		base:   base,
 		conn:   conn,
 		logger: logger,
+		client: &outhttp.Client{},
 	}
 }

@@ -20,7 +20,7 @@ var (
 	wrongID = uint64(0)
 )
 
-func beforeTest(t *testing.T) (*mock.MockRepository, user.Usecase) {
+func setUp(t *testing.T) (*mock.MockRepository, user.Usecase) {
 	ctrl := gomock.NewController(t)
 	r := mock.NewMockRepository(ctrl)
 	u := NewUser(r, zap.NewExample())
@@ -29,7 +29,7 @@ func beforeTest(t *testing.T) (*mock.MockRepository, user.Usecase) {
 }
 
 func TestUser_Add_EmptyUsername(t *testing.T) {
-	_, u := beforeTest(t)
+	_, u := setUp(t)
 
 	_, err := u.Add(new(model.User))
 
@@ -37,7 +37,7 @@ func TestUser_Add_EmptyUsername(t *testing.T) {
 }
 
 func TestUser_Add_ExistingUsername(t *testing.T) {
-	r, u := beforeTest(t)
+	r, u := setUp(t)
 
 	r.EXPECT().Contains(test.Username).Return(true)
 
@@ -47,7 +47,7 @@ func TestUser_Add_ExistingUsername(t *testing.T) {
 }
 
 func TestUser_Add_CorrectUsername(t *testing.T) {
-	r, u := beforeTest(t)
+	r, u := setUp(t)
 
 	r.EXPECT().Contains(test.Username).Return(false)
 	r.EXPECT().Add(&test).Return(&test, nil)
@@ -59,7 +59,7 @@ func TestUser_Add_CorrectUsername(t *testing.T) {
 }
 
 func TestUser_Get_WrongId(t *testing.T) {
-	_, u := beforeTest(t)
+	_, u := setUp(t)
 
 	_, err := u.Get(wrongID)
 
@@ -67,7 +67,7 @@ func TestUser_Get_WrongId(t *testing.T) {
 }
 
 func TestUser_Get_CorrectId(t *testing.T) {
-	r, u := beforeTest(t)
+	r, u := setUp(t)
 
 	r.EXPECT().Get(test.ID).Return(&test, nil)
 
@@ -78,7 +78,7 @@ func TestUser_Get_CorrectId(t *testing.T) {
 }
 
 func TestUser_Update_WrongId(t *testing.T) {
-	_, u := beforeTest(t)
+	_, u := setUp(t)
 
 	_, err := u.Update(wrongID, nil)
 
@@ -86,7 +86,7 @@ func TestUser_Update_WrongId(t *testing.T) {
 }
 
 func TestUser_Update_CorrectId(t *testing.T) {
-	r, u := beforeTest(t)
+	r, u := setUp(t)
 
 	r.EXPECT().Update(test.ID, &test).Return(&test, nil)
 

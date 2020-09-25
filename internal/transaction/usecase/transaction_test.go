@@ -28,7 +28,7 @@ var (
 	desc     = false
 )
 
-func beforeTest(t *testing.T) (*mock.MockRepository, transaction.Usecase) {
+func setUp(t *testing.T) (*mock.MockRepository, transaction.Usecase) {
 	ctrl := gomock.NewController(t)
 	rep := mock.NewMockRepository(ctrl)
 	usecase := NewTransaction(pageSize, rep, zap.NewExample())
@@ -37,7 +37,7 @@ func beforeTest(t *testing.T) (*mock.MockRepository, transaction.Usecase) {
 }
 
 func TestTransaction_Add_WrongTransaction(t *testing.T) {
-	_, usecase := beforeTest(t)
+	_, usecase := setUp(t)
 	var input []model.Transaction
 
 	input = append(input, model.Transaction{
@@ -63,7 +63,7 @@ func TestTransaction_Add_WrongTransaction(t *testing.T) {
 }
 
 func TestTransaction_Add(t *testing.T) {
-	rep, usecase := beforeTest(t)
+	rep, usecase := setUp(t)
 
 	rep.EXPECT().Add(&test).Return(&test, nil)
 
@@ -74,7 +74,7 @@ func TestTransaction_Add(t *testing.T) {
 }
 
 func TestTransaction_Get_WrongId(t *testing.T) {
-	_, usecase := beforeTest(t)
+	_, usecase := setUp(t)
 
 	_, err := usecase.Get(wrongID)
 
@@ -82,7 +82,7 @@ func TestTransaction_Get_WrongId(t *testing.T) {
 }
 
 func TestTransaction_Get(t *testing.T) {
-	rep, usecase := beforeTest(t)
+	rep, usecase := setUp(t)
 
 	rep.EXPECT().Get(test.ID).Return(&test, nil)
 
@@ -93,7 +93,7 @@ func TestTransaction_Get(t *testing.T) {
 }
 
 func TestTransaction_GetOrderByDate_WrongId(t *testing.T) {
-	_, usecase := beforeTest(t)
+	_, usecase := setUp(t)
 
 	_, err := usecase.GetOrderByDate(wrongID, page, desc)
 
@@ -101,7 +101,7 @@ func TestTransaction_GetOrderByDate_WrongId(t *testing.T) {
 }
 
 func TestTransaction_GetOrderByDate(t *testing.T) {
-	rep, usecase := beforeTest(t)
+	rep, usecase := setUp(t)
 
 	rep.EXPECT().GetOrderByDate(userID, page*pageSize, page*pageSize+pageSize, desc).Return([]model.Transaction{test}, nil)
 
@@ -112,7 +112,7 @@ func TestTransaction_GetOrderByDate(t *testing.T) {
 }
 
 func TestTransaction_GetOrderBySum_WrongId(t *testing.T) {
-	_, usecase := beforeTest(t)
+	_, usecase := setUp(t)
 
 	_, err := usecase.GetOrderBySum(wrongID, page, desc)
 
@@ -120,7 +120,7 @@ func TestTransaction_GetOrderBySum_WrongId(t *testing.T) {
 }
 
 func TestTransaction_GetOrderBySum(t *testing.T) {
-	rep, usecase := beforeTest(t)
+	rep, usecase := setUp(t)
 
 	rep.EXPECT().GetOrderBySum(userID, page*pageSize, page*pageSize+pageSize, desc).Return([]model.Transaction{test}, nil)
 

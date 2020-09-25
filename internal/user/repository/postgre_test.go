@@ -17,7 +17,7 @@ var (
 	}
 )
 
-func beforeTest(t *testing.T) (*gorm.DB, sqlmock.Sqlmock) {
+func setUp(t *testing.T) (*gorm.DB, sqlmock.Sqlmock) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -32,7 +32,7 @@ func beforeTest(t *testing.T) (*gorm.DB, sqlmock.Sqlmock) {
 }
 
 func TestUser_Add(t *testing.T) {
-	db, mock := beforeTest(t)
+	db, mock := setUp(t)
 	defer db.Close()
 
 	r := NewUser(db, zap.NewExample())
@@ -54,7 +54,7 @@ func TestUser_Add(t *testing.T) {
 }
 
 func TestUser_Get_NotFound(t *testing.T) {
-	db, mock := beforeTest(t)
+	db, mock := setUp(t)
 	defer db.Close()
 
 	r := NewUser(db, zap.NewExample())
@@ -72,7 +72,7 @@ func TestUser_Get_NotFound(t *testing.T) {
 }
 
 func TestUser_Get(t *testing.T) {
-	db, mock := beforeTest(t)
+	db, mock := setUp(t)
 	defer db.Close()
 
 	r := NewUser(db, zap.NewExample())
@@ -92,7 +92,7 @@ func TestUser_Get(t *testing.T) {
 }
 
 func TestUser_Update(t *testing.T) {
-	db, mock := beforeTest(t)
+	db, mock := setUp(t)
 	defer db.Close()
 
 	r := NewUser(db, zap.NewExample())
@@ -117,7 +117,7 @@ func TestUser_Update(t *testing.T) {
 }
 
 func TestUser_Contains(t *testing.T) {
-	db, mock := beforeTest(t)
+	db, mock := setUp(t)
 	defer db.Close()
 
 	r := NewUser(db, zap.NewExample())

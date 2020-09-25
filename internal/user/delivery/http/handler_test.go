@@ -27,7 +27,7 @@ var (
 	wrongID   = "test"
 )
 
-func beforeTest(t *testing.T) (
+func setUp(t *testing.T) (
 	*mock.MockUsecase,
 	*mock2.MockContext,
 	*UserHandler) {
@@ -47,7 +47,7 @@ func beforeTest(t *testing.T) (
 }
 
 func TestUserHandler_AddUser_EmptyBody(t *testing.T) {
-	_, ctx, handler := beforeTest(t)
+	_, ctx, handler := setUp(t)
 
 	request, err := http.NewRequest("", "", strings.NewReader(""))
 	if err != nil {
@@ -62,7 +62,7 @@ func TestUserHandler_AddUser_EmptyBody(t *testing.T) {
 }
 
 func TestUserHandler_AddUser(t *testing.T) {
-	usecase, ctx, handler := beforeTest(t)
+	usecase, ctx, handler := setUp(t)
 
 	body, err := easyjson.Marshal(test)
 	if err != nil {
@@ -83,7 +83,7 @@ func TestUserHandler_AddUser(t *testing.T) {
 }
 
 func TestUserHandler_GetUser_WrongId(t *testing.T) {
-	_, ctx, handler := beforeTest(t)
+	_, ctx, handler := setUp(t)
 
 	ctx.EXPECT().Param(gomock.Any()).Return(wrongID)
 
@@ -93,7 +93,7 @@ func TestUserHandler_GetUser_WrongId(t *testing.T) {
 }
 
 func TestUserHandler_GetUser(t *testing.T) {
-	usecase, ctx, handler := beforeTest(t)
+	usecase, ctx, handler := setUp(t)
 
 	ctx.EXPECT().Param(gomock.Any()).Return(correctID)
 	ctx.EXPECT().QueryParam("currency").Return("")
@@ -105,7 +105,7 @@ func TestUserHandler_GetUser(t *testing.T) {
 }
 
 func TestUserHandler_UpdateUser(t *testing.T) {
-	usecase, ctx, handler := beforeTest(t)
+	usecase, ctx, handler := setUp(t)
 
 	body, err := easyjson.Marshal(test)
 	if err != nil {
